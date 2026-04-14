@@ -6,6 +6,10 @@ export type Decision = {
   hiddenStructure: string;
   flavorReveal: string;
   statImpact: Partial<Record<StatKey, number>>;
+  flagsAdd?: string[];
+  isSubstance?: boolean;
+  isGameOver?: boolean;
+  resetStatsToNeutral?: boolean;
 };
 
 export type Voice = {
@@ -15,6 +19,8 @@ export type Voice = {
 
 export type GameEvent = {
   id: string;
+  ageRange: [number, number];
+  requiresFlag?: string;
   sceneText: string;
   voices: Voice[];
   decisions: Decision[];
@@ -23,6 +29,7 @@ export type GameEvent = {
 export const events: GameEvent[] = [
   {
     id: "evt_milestone_pierwsze_slowo",
+    ageRange: [0, 2],
     sceneText:
       "Wszyscy czekają. Mama płacze ze wzruszenia. Tata ma kamerę (pionowo, oczywiście). Babcia przyjechała 200 km. Cisza. Wszystkie oczy na Ciebie. Otwierasz usta.",
     voices: [
@@ -47,6 +54,7 @@ export const events: GameEvent[] = [
         flavorReveal:
           "Hipokamp połączył twarz z dźwiękiem. Miesiące obserwacji skompresowane w jedno słowo. Mama płacze. Tata nagrywa. Babcia mówi 'a u mnie pierwsze słowo powiedział dziadek'.",
         statImpact: { o: 3, a: 2 },
+        flagsAdd: ["pierwsze_slowo_mama"],
       },
       {
         id: "dec_2",
@@ -66,9 +74,103 @@ export const events: GameEvent[] = [
       },
     ],
   },
+  {
+    id: "evt_age_2_broccoli_war",
+    ageRange: [1, 3],
+    sceneText:
+      "Obiad. Na talerzu ląduje coś zielonego i drzewiastego. Rodzice uśmiechają się podejrzanie szeroko. 'To pyszne drzewka!', mówią. Czujesz podstęp. To nie są drzewka. To zdrada stanu.",
+    voices: [
+      {
+        structure: "Wyspa (Insula)",
+        text: "Pachnie jak kwas i rozczarowanie. Jeśli to połkniesz, nie ręczę za nasz żołądek.",
+      },
+      {
+        structure: "Jądro Ogoniaste",
+        text: "Pamiętasz wczorajszą frytkę? To nie jest frytka. ZRÓB SCENĘ. Natychmiast.",
+      },
+      {
+        structure: "Kora Przedczołowa",
+        text: "Hmm... może jeśli to zjesz, dostaniesz... a nieważne, jeszcze nie umiem planować tak daleko.",
+      },
+    ],
+    decisions: [
+      {
+        id: "dec_1",
+        text: "Krzyknij 'NIE!' i zrzuć talerz ze stołu",
+        hiddenStructure: "Jądro Ogoniaste",
+        flavorReveal:
+          "Jądro ogoniaste u 2-latka to centrum zarządzania buntem. Mechanizm hamowania impulsów jeszcze nie istnieje, więc 'chcę' staje się 'robię'. Grawitacja potwierdzona: brokuł leży na dole.",
+        statImpact: { e: 3, n: 2 },
+      },
+      {
+        id: "dec_2",
+        text: "Zaciśnij usta tak mocno, że nie wejdzie tam nawet atom wodoru",
+        hiddenStructure: "Wyspa",
+        flavorReveal:
+          "Wyspa przetwarza obrzydzenie i sygnały z ciała. Twoja reakcja broni organizmu przed 'nieznanym', czyli w tym przypadku witaminami. Rodzice szukają instrukcji obsługi dziecka.",
+        statImpact: { o: -3, n: 1 },
+      },
+      {
+        id: "dec_3",
+        text: "Spróbuj ugryźć jeden kawałek (niechcący)",
+        hiddenStructure: "Kora Przedczołowa",
+        flavorReveal:
+          "Zalążki kory przedczołowej próbują negocjacji. To rzadki moment, w którym ciekawość wygrywa z instynktem ucieczki. Smakuje jak... w sumie nic nie czujesz, bo Twoje kubki smakowe są nastawione na czysty cukier.",
+        statImpact: { o: 5, a: 1 },
+      },
+    ],
+  },
+  {
+    id: "evt_age_3_crayon_gourmet",
+    ageRange: [2, 5],
+    requiresFlag: "pierwsze_slowo_mama",
+    sceneText:
+      "Zostałeś sam w pokoju z pudełkiem kredek. Żółta wygląda wyjątkowo soczyście. Przypomina banana, promień słońca i radość. Kusi bardziej niż zakazane oprogramowanie.",
+    voices: [
+      {
+        structure: "Wzgórze",
+        text: "Odbieram sygnał: żółty. Bardzo żółty. Przekazuję do kory wzrokowej... hej, a może sprawdzimy teksturę językiem?",
+      },
+      {
+        structure: "Hipokamp",
+        text: "Słońce jest żółte. Kurczaczek jest żółty. Ser jest żółty. Ser się je. Logiczne, prawda?",
+      },
+      {
+        structure: "Jądro Ogoniaste",
+        text: "Zjedz ją. Nie pytaj po co. Po prostu sprawdź, czy chrupie.",
+      },
+    ],
+    decisions: [
+      {
+        id: "dec_1",
+        text: "Ugryź solidny kawałek żółtej kredki",
+        hiddenStructure: "Jądro Ogoniaste",
+        flavorReveal:
+          "Jądro ogoniaste napędza eksploracyjną pętlę dopaminy. Efekt? Masz żółte zęby i woskowy posmak w ustach. Mama panikuje, ale Ty właśnie przeprowadziłeś ważny eksperyment chemiczny.",
+        statImpact: { o: 6, n: -2 },
+      },
+      {
+        id: "dec_2",
+        text: "Narysuj słońce na białej ścianie",
+        hiddenStructure: "Wzgórze",
+        flavorReveal:
+          "Wzgórze jako stacja przekaźnikowa połączyło bodziec wzrokowy z motoryką. Ściana była zbyt idealnym płótnem, by ją zignorować. To Twój pierwszy performance artystyczny. Rodzice nie kupują biletów.",
+        statImpact: { o: 4, e: 2 },
+      },
+      {
+        id: "dec_3",
+        text: "Zanieś kredkę mamie i powiedz 'da'",
+        hiddenStructure: "Wyspa",
+        flavorReveal:
+          "Insula (wyspa) bierze udział w budowaniu empatii i więzi społecznych. Wybrałeś interakcję zamiast konsumpcji. Mama jest zachwycona, póki nie zobaczy, że zjadłeś już połowę niebieskiej.",
+        statImpact: { a: 5 },
+      },
+    ],
+  },
 
   {
     id: "evt_milestone_wyscig_rowerek",
+    ageRange: [4, 7],
     sceneText:
       "Bartek z przedszkola twierdzi, że jest najszybszy na świecie. Na rowerku biegowym. Cały plac zabaw patrzy. Linia startu narysowana kijem w piasku. To jest poważna sprawa.",
     voices: [
@@ -115,6 +217,7 @@ export const events: GameEvent[] = [
 
   {
     id: "evt_milestone_pierwszy_dzien_szkoly",
+    ageRange: [6, 8],
     sceneText:
       "Plecak większy od Ciebie. Piórnik pachnie plastikiem. Mama powiedziała 'będzie fajnie!' siedem razy rano. Stoisz przed budynkiem, który wygląda jak więzienie z kolorowymi oknami.",
     voices: [
@@ -161,6 +264,7 @@ export const events: GameEvent[] = [
 
   {
     id: "evt_milestone_referat_dinozaury",
+    ageRange: [7, 9],
     sceneText:
       "12 stron referatu. Odręczne rysunki (T-Rex wygląda jak pies z dużą głową). Pani wywołuje do tablicy. 25 par oczu. Zapominasz jak masz na imię.",
     voices: [
@@ -207,6 +311,7 @@ export const events: GameEvent[] = [
 
   {
     id: "evt_milestone_pierwszy_telefon",
+    ageRange: [11, 14],
     sceneText:
       "Dostajesz pierwszy smartfon. Ekran świeci jak miniaturowe słońce. Rodzice mówią 'tylko do nauki i dzwonienia'. Masz już 3 pomysły, które nie dotyczą ani nauki, ani dzwonienia.",
     voices: [
@@ -257,6 +362,7 @@ export const events: GameEvent[] = [
 
   {
     id: "evt_milestone_klotnia_rodzic",
+    ageRange: [12, 16],
     sceneText:
       "Chcesz wyjść. Rodzic mówi 'nie'. Mówisz 'dlaczego'. Mówi 'bo nie'. I w tym momencie odkrywasz nowe uczucie: czystą, krystaliczną FURIĘ wobec kogoś, kogo kochasz.",
     voices: [
@@ -303,6 +409,7 @@ export const events: GameEvent[] = [
 
   {
     id: "evt_milestone_wielka_milosc",
+    ageRange: [14, 17],
     sceneText:
       "Obóz letni. Ostatni dzień. Wymieniliście się numerami telefonów — w erze smartfonów to jak wymiana obrączek. Autobus za godzinę. Czujesz coś w żołądku, czego żadna lekcja biologii nie potrafiła wyjaśnić.",
     voices: [
@@ -349,6 +456,7 @@ export const events: GameEvent[] = [
 
   {
     id: "evt_milestone_pierwsza_impreza",
+    ageRange: [15, 18],
     sceneText:
       "Sobota. Ktoś z klasy urządza imprezę. Rodzice wyjechali. SMS: 'Będą wszyscy'. Twoi rodzice pytają 'czyje to urodziny?' Mówisz 'Ani'. Żadna Ania nie ma urodzin. Nie masz Ani w klasie.",
     voices: [
@@ -395,6 +503,7 @@ export const events: GameEvent[] = [
 
   {
     id: "evt_milestone_wybor_kierunku",
+    ageRange: [16, 19],
     sceneText:
       "Formularz rejestracyjny na studia. 3 pola: kierunek 1, 2, 3. Masz 45 minut. Rodzice mają 'sugestie'. Doradca zawodowy powiedział 'rób to co kochasz'. Kochasz spanie.",
     voices: [
@@ -441,6 +550,7 @@ export const events: GameEvent[] = [
 
   {
     id: "evt_milestone_matura",
+    ageRange: [17, 20],
     sceneText:
       "Wchodzisz na salę. Otwierasz arkusz. 'Oblicz granicę funkcji...' Mózg robi factory reset.",
     voices: [
@@ -491,6 +601,7 @@ export const events: GameEvent[] = [
 
   {
     id: "evt_random_potwor_pod_lozkiem",
+    ageRange: [3, 9],
     sceneText:
       "Jest 2:00 w nocy. Coś skrzypnęło pod łóżkiem. Prawdopodobnie to drewno. Prawdopodobnie. Ale ciało migdałowate mówi: 'a co jeśli to POTWÓR?'",
     voices: [
@@ -537,6 +648,7 @@ export const events: GameEvent[] = [
 
   {
     id: "evt_random_niesprawiedliwa_ocena",
+    ageRange: [7, 13],
     sceneText:
       "Sprawdzian z matmy. Dostałeś 2. Bartek dostał 4. Bartek ściągał. WIDZIAŁEŚ jak ściągał. Świat nie jest sprawiedliwy i masz na to dowód.",
     voices: [
@@ -583,6 +695,7 @@ export const events: GameEvent[] = [
 
   {
     id: "evt_random_nocowanie_u_kolegi",
+    ageRange: [8, 14],
     sceneText:
       "Piżama party u Kuby. Pizza, filmy, granie do rana. Jest 23:00. Wszyscy się bawią. Ty leżysz w śpiworze i myślisz o swojej poduszce. I o mamie. I o psie. I o swojej poduszce jeszcze raz.",
     voices: [
@@ -629,6 +742,7 @@ export const events: GameEvent[] = [
 
   {
     id: "evt_random_instagram_porownanie",
+    ageRange: [13, 18],
     sceneText:
       "Jest 1:00 w nocy. Scrollujesz Instagrama. Kasia jest na Bali. Bartek ma mięśnie. Zuzia ma 2000 followerów. Ty masz piżamę w misie i jutro kartkówkę z biologii.",
     voices: [
@@ -675,6 +789,7 @@ export const events: GameEvent[] = [
 
   {
     id: "evt_random_energetyk_sprawdzian",
+    ageRange: [14, 20],
     sceneText:
       "Jutro sprawdzian z chemii. Nie otworzyłeś podręcznika od... października? Na biurku dwie puszki Monstera. Jest 22:00. Plan: wypić, nauczyć się, zdać. Co może pójść nie tak?",
     voices: [
@@ -719,3 +834,44 @@ export const events: GameEvent[] = [
     ],
   },
 ];
+
+export const criticalDeathEvent: GameEvent = {
+  id: "evt_critical_overload",
+  ageRange: [0, 99],
+  sceneText:
+    "Twój organizm mówi: WYSIADAM. Poziom allostatycznego przeciążenia wywalił korki. Kortyzol strzela uszami, serce robi techno-remix, a rzeczywistość zaczyna klatkować. Mózg żąda natychmiastowej interwencji!",
+  voices: [
+    {
+      structure: "Ciało Migdałowate",
+      text: "TO KONIEC! ŚWIATEŁKO W TUNELU! UCIEKAMY DO ŚWIATEŁKA!",
+    },
+    {
+      structure: "Wyspa (Insula)",
+      text: "BÓL. GULE W GARDLE. MDŁOŚCI. Zrób coś idiotko/idioto, bo zaraz nas wyłączą!",
+    },
+    {
+      structure: "Kora Przedczołowa",
+      text: "Błąd Systemu 404. Logika niedostępna z powodu braku homeostazy. Sugeruję wezwanie pomocy profesjonalnej.",
+    },
+  ],
+  decisions: [
+    {
+      id: "dec_death",
+      text: "Wypij energetyka i udawaj, że nic się nie dzieje",
+      hiddenStructure: "Jądro Ogoniaste",
+      flavorReveal:
+        "Zignorowałeś sygnały z Wyspy. Jądro Ogoniaste chciało szybkiej nagrody, ale system nie wytrzymał obciążenia. Nastąpił twardy reset.",
+      statImpact: {},
+      isGameOver: true,
+    },
+    {
+      id: "dec_save",
+      text: "Dzwoń po pogotowie i oddychaj w torebkę",
+      hiddenStructure: "Wyspa (Insula)",
+      flavorReveal:
+        "Wyspa uratowała Ci życie. Interocepcja zadziałała — posłuchałeś/aś ciała. Trafiasz na oddział, tracisz rok życia, ale lekarze stabilizują Twoje skrajne statystyki.",
+      statImpact: {},
+      resetStatsToNeutral: true,
+    },
+  ],
+};
